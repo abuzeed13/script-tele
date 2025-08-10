@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة الخدمات - السيرفر الأول</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            direction: rtl;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #FF6B6B, #4ECDC4, #45B7D1, #96CEB4);
+        }
+
+        .server-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .server-badge {
+            display: inline-block;
+            background: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            padding: 30px;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e3e6ea;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-header {
+            border-bottom: 2px solid #f1f3f5;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .product-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .product-type {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+
+        .product-details {
+            margin-bottom: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #f8f9fa;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.95em;
+        }
+
+        .detail-value {
+            color: #6c757d;
+            font-family: 'Courier New', monospace;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #1e7e34;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .stats-bar {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 30px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>نظام إدارة الخدمات الشبكية</h1>
+            <p>إدارة حسابات PPP و Hotspot</p>
+        </div>
+
+        <div class="server-info">
+            <div class="server-badge">السيرفر الأول - نشط</div>
+            <p>RouterOS 6.44.3 - RB1100Dx4</p>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">24</div>
+                    <div class="stat-label">إجمالي حسابات PPP</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">18</div>
+                    <div class="stat-label">حسابات نشطة</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">حسابات Hotspot</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">8</div>
+                    <div class="stat-label">متصل حالياً</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="products-grid">
+            <!-- PPP Account -->
+            <div class="product-card">
+                <div class="product-header">
+                    <div class="product-title">حساب PPP - زيد</div>
+                    <span class="product-type">PPPoE</span>
+                </div>
+                <div class="product-details">
+                    <div class="detail-row">
+                        <span class="detail-label">اسم المستخدم:</span>
+                        <span class="detail-value">zeed</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">كلمة المرور:</span>
+                        <span class="detail-value">123456</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">البروفايل:</span>
+                        <span class="detail-value">512K</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">الحالة:</span>
+                        <span class="status-badge status-active">نشط</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">وقت الاتصال:</span>
+                        <span class="detail-value">2h 15m</span>
+                    </div>
+                </div>
+                <div class="product-actions">
+                    <button class="btn btn-success">تفعيل</button>
+                    <button class="btn btn-primary">تعديل</button>
+                    <button class="btn btn-danger">حذف</button>
+                </div>
+            </div>
+
+            <!-- Hotspot Account -->
+            <div class="product-card">
+                <div class="product-header">
+                    <div class="product-title">حساب Hotspot - أحمد</div>
+                    <span class="product-type">Hotspot</span>
+                </div>
+                <div class="product-details">
+                    <div class="detail-row">
+                        <span class="detail-label">اسم المستخدم:</span>
+                        <span class="detail-value">ahmed</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">كلمة المرور:</span>
+                        <span class="detail-value">pass123</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">البروفايل:</span>
+                        <span class="detail-value">1M</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">الحالة:</span>
+                        <span class="status-badge status-active">نشط</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">الاستخدام:</span>
+                        <span class="detail-value">245 MB</span>
+                    </div>
+                </div>
+                <div class="product-actions">
+                    <button class="btn btn-success">تفعيل</button>
+                    <button class="btn btn-primary">تعديل</button>
+                    <button class="btn btn-danger">حذف</button>
+                </div>
+            </div>
+
+            <!-- Inactive Account -->
+            <div class="product-card">
+                <div class="product-header">
+                    <div class="product-title">حساب PPP - محمد</div>
+                    <span class="product-type">PPPoE</span>
+                </div>
+                <div class="product-details">
+                    <div class="detail-row">
+                        <span class="detail-label">اسم المستخدم:</span>
+                        <span class="detail-value">mohammed</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">كلمة المرور:</span>
+                        <span class="detail-value">mypass</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">البروفايل:</span>
+                        <span class="detail-value">256K</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">الحالة:</span>
+                        <span class="status-badge status-inactive">معطل</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">آخر اتصال:</span>
+                        <span class="detail-value">منذ 3 أيام</span>
+                    </div>
+                </div>
+                <div class="product-actions">
+                    <button class="btn btn-success">تفعيل</button>
+                    <button class="btn btn-primary">تعديل</button>
+                    <button class="btn btn-danger">حذف</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
